@@ -1,0 +1,81 @@
+# Evaluation questions mapped to expected product SKUs over samples/catalog.csv
+questions:
+  # kurta-001: Neeli kurta
+  - query: "Mujhe neeli kurta chahiye"
+    expected_sku: "kurta-001"
+  - query: "Blue kurta for daily wear"
+    expected_sku: "kurta-001"
+  - query: "Rozana pehnay ke liye blue kurta dikhayein"
+    expected_sku: "kurta-001"
+
+  # kurta-002: Gulabi kurti
+  - query: "Pink lawn kurti available hai?"
+    expected_sku: "kurta-002"
+  - query: "Gulabi kurti lawn fabric"
+    expected_sku: "kurta-002"
+  - query: "Soft cotton pink kurti for women"
+    expected_sku: "kurta-002"
+
+  # shalwar-001: Sada shalwar
+  - query: "White cotton sada shalwar"
+    expected_sku: "shalwar-001"
+  - query: "Black shalwar plain kapray"
+    expected_sku: "shalwar-001"
+  - query: "Cotton shalwar simple"
+    expected_sku: "shalwar-001"
+
+  # dupatta-001: Chunri dupatta
+  - query: "Multi color chunri dupatta"
+    expected_sku: "dupatta-001"
+  - query: "Rang birangi chunri dupatta"
+    expected_sku: "dupatta-001"
+  - query: "Red yellow green chunri"
+    expected_sku: "dupatta-001"
+
+  # khussa-001: Brown khussa
+  - query: "Handmade brown leather khussa"
+    expected_sku: "khussa-001"
+  - query: "Brown khussa joote for men"
+    expected_sku: "khussa-001"
+  - query: "Desi handmade khussa brown"
+    expected_sku: "khussa-001"
+
+  # sandal-001: Chappal sandal
+  - query: "Rozana pehnay ke liye chappal ya sandal"
+    expected_sku: "sandal-001"
+  - query: "Casual tan black sandals joote"
+    expected_sku: "sandal-001"
+  - query: "Daily wear comfort sandals chappal"
+    expected_sku: "sandal-001"
+
+  # bag-001: Rangila tote bag
+  - query: "Cotton tote bag for shopping"
+    expected_sku: "bag-001"
+  - query: "Rangila printed tote bag"
+    expected_sku: "bag-001"
+  - query: "Mazboot cotton bag blue red"
+    expected_sku: "bag-001"
+
+  # shawl-001: Pashmina shawl
+  - query: "Sardiyon ke liye pashmina garam shawl"
+    expected_sku: "shawl-001"
+  - query: "Warm winter pashmina shawl"
+    expected_sku: "shawl-001"
+  - query: "Maroon grey woolen shawl"
+    expected_sku: "shawl-001"
+
+  # kids-001: Bachon ka kurta
+  - query: "Bachon ke liye cotton kurta"
+    expected_sku: "kids-001"
+  - query: "Kids green blue kurta"
+    expected_sku: "kids-001"
+  - query: "Chotay bachon ke kapray kurta"
+    expected_sku: "kids-001"
+
+  # waistcoat-001: Eid waistcoat
+  - query: "Eid ke liye khubsurat waistcoat"
+    expected_sku: "waistcoat-001"
+  - query: "Black navy festive waistcoat for men"
+    expected_sku: "waistcoat-001"
+  - query: "Eid special waistcoat"
+    expected_sku: "waistcoat-001"

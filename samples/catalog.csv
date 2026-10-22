@@ -1,0 +1,11 @@
+sku,name,description,price_pkr,sizes,colors,stock,category
+kurta-001,Neeli kurta,Rozi marra ke liye,3200,S|M|L,Blue|White,12,kapray
+kurta-002,Gulabi kurti,Naram lawn ki kurti,2800,S|M|L|XL,Pink,8,kapray
+shalwar-001,Sada shalwar,Halke cotton ki shalwar,1500,M|L|XL,White|Black,20,kapray
+dupatta-001,Chunri dupatta,Rang birangi chunri,900,One Size,Red|Yellow|Green,15,kapray
+khussa-001,Brown khussa,Handmade khussa,4500,38|39|40|41|42,Brown,6,joote
+sandal-001,Chappal sandal,Rozana pehnay ke liye,2200,6|7|8|9,Black|Tan,10,joote
+bag-001,Rangila tote bag,Cotton ka mazboot bag,1200,One Size,Blue|Red,14,bags
+shawl-001,Pashmina shawl,Sardiyon ke liye garam shawl,6500,One Size,Maroon|Grey,5,shawls
+kids-001,Bachon ka kurta,Bachon ke liye cotton kurta,1800,2Y|4Y|6Y,Green|Blue,9,kapray
+waistcoat-001,Eid waistcoat,Eid ke liye khubsurat waistcoat,5200,M|L|XL,Black|Navy,4,kapray

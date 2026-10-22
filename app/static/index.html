@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>SellerBot</title>
+  <style>
+    :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:#15231e;background:#f3f6f4;font-synthesis:none}
+    *{box-sizing:border-box}body{margin:0}.shell{max-width:1120px;margin:auto;padding:32px 22px 60px}.brand{font-size:20px;font-weight:800;letter-spacing:-.04em}.brand span{color:#16845b}.muted{color:#66756e}.card{background:white;border:1px solid #e2e9e5;border-radius:14px;padding:22px;box-shadow:0 5px 22px #163b2810}.auth{max-width:440px;margin:12vh auto}.stack{display:grid;gap:13px}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.split{display:flex;justify-content:space-between;gap:16px;align-items:center}.tabs{display:flex;gap:8px;margin:24px 0 16px;flex-wrap:wrap}button,.button{border:0;border-radius:9px;padding:10px 15px;background:#137a53;color:white;font-weight:650;cursor:pointer}button.secondary{background:#e8f2ed;color:#176847}button.danger{background:#fff0ee;color:#a43227}input,textarea{width:100%;padding:11px 12px;border:1px solid #ccd8d1;border-radius:8px;font:inherit}label{font-weight:650;font-size:13px;display:grid;gap:6px}h1{font-size:30px;letter-spacing:-.04em;margin:24px 0 4px}h2{font-size:19px;margin:0 0 14px}table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid #edf0ee;vertical-align:top}th{color:#66756e;font-weight:650}.scroll{overflow:auto}.status{padding:10px 12px;border-radius:8px;background:#edf7f1;margin:12px 0}.error{background:#fff0ee;color:#9c3025}.tag{font-size:12px;border-radius:99px;background:#eaf4ef;padding:4px 9px;color:#176847}.chat{border-left:2px solid #e1e9e4;padding:8px 0 8px 13px;margin:10px 0}.msg{white-space:pre-wrap;border-radius:9px;background:#f3f6f4;padding:9px 12px;margin:5px 0;max-width:700px}.msg.out{background:#e9f5ed;margin-left:auto}.hidden{display:none!important}.hint{font-size:13px;line-height:1.5}.danger-text{color:#9c3025}
+    @media(max-width:650px){.shell{padding:22px 14px 40px}h1{font-size:25px}.card{padding:16px}table{min-width:620px}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="brand">Seller<span>Bot</span></div>
+    <section id="auth" class="card auth hidden">
+      <h1 id="auth-title">Welcome back</h1><p class="muted">Manage your products, answers and WhatsApp connection.</p>
+      <div id="notice" class="status hidden" role="status"></div>
+      <form id="login-form" class="stack">
+        <label>Seller email<input name="email" type="email" autocomplete="username" required></label>
+        <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
+        <button>Sign in</button><button type="button" class="secondary" id="show-signup">Create a seller account</button>
+      </form>
+      <form id="signup-form" class="stack hidden">
+        <label>Store name<input name="seller_name" maxlength="100" required></label>
+        <label>Email<input name="email" type="email" autocomplete="username" required></label>
+        <label>Password<input name="password" type="password" minlength="10" autocomplete="new-password" required></label>
+        <button>Create account</button><button type="button" class="secondary" id="show-login">I already have an account</button>
+      </form>
+    </section>
+    <section id="app" class="hidden">
+      <div class="split"><div><h1>Seller dashboard</h1><div class="muted" id="identity"></div></div><button id="logout" class="secondary">Sign out</button></div>
+      <nav class="tabs" aria-label="Dashboard sections">
+        <button data-view="products">Products</button><button class="secondary" data-view="faqs">FAQs</button><button class="secondary" data-view="conversations">Conversations</button><button class="secondary" data-view="whatsapp">WhatsApp setup</button>
+      </nav>
+      <div id="app-notice" class="status hidden" role="status"></div>
+      <section id="products-view" class="card view">
+        <div class="split"><h2>Product catalog</h2><button id="download-template" class="secondary">Download CSV template</button></div>
+        <form id="upload-form" class="row"><input aria-label="Catalog CSV" name="file" type="file" accept=".csv,text/csv" required><button>Upload CSV</button></form>
+        <p class="hint muted">CSV columns: sku, name, description, price_pkr, sizes, colors, stock, category. Separate multiple sizes or colors with |.</p>
+        <div class="scroll"><table><thead><tr><th>SKU</th><th>Product</th><th>Price (PKR)</th><th>Stock</th><th>State</th></tr></thead><tbody id="products"></tbody></table></div>
+      </section>
+      <section id="faqs-view" class="card view hidden">
+        <h2>Frequently asked questions</h2>
+        <form id="faq-form" class="stack"><label>Question<input name="question" maxlength="500" required></label><label>Answer<textarea name="answer" maxlength="2000" rows="3" required></textarea></label><button>Add FAQ</button></form>
+        <div id="faqs-list"></div>
+      </section>
+      <section id="conversations-view" class="card view hidden"><div class="split"><h2>Customer conversations</h2><button id="refresh-conversations" class="secondary">Refresh</button></div><div id="conversations-list"></div></section>
+      <section id="whatsapp-view" class="card view hidden">
+        <h2>Connect WhatsApp Cloud API</h2><div id="wa-state" class="status">Loading connection status…</div>
+        <form id="whatsapp-form" class="stack"><label>Phone Number ID<input name="phone_number_id" autocomplete="off" required></label><label>Permanent access token<input name="access_token" type="password" autocomplete="new-password" required></label><p class="hint muted">Token is encrypted before storage and never shown again. Configure the Meta webhook URL as <code>https://YOUR-DOMAIN/webhooks/whatsapp</code>.</p><button>Save WhatsApp connection</button></form>
+      </section>
+    </section>
+  </main>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const authBox = $('auth'), appBox = $('app');
+    function showNotice(id, message, bad=false){const el=$(id);el.textContent=message;el.classList.remove('hidden','error');if(bad)el.classList.add('error');}
+    function hideNotice(id){$(id).classList.add('hidden');}
+    async function api(path, options={}){
+      const headers=new Headers(options.headers||{});headers.set('Accept','application/json');
+      if(options.body && !(options.body instanceof FormData))headers.set('Content-Type','application/json');
+      const response=await fetch(path,{...options,headers,credentials:'same-origin'});
+      const type=response.headers.get('content-type')||'';const data=type.includes('application/json')?await response.json():await response.text();
+      if(!response.ok)throw new Error(typeof data==='object'?(data.detail||'Request failed'):'Request failed');return data;
+    }
+    async function csrf(){return (await api('/auth/csrf')).csrf_token;}
+    async function mutate(path,method,body){const token=await csrf();return api(path,{method,headers:{'X-CSRF-Token':token},body:body instanceof FormData?body:JSON.stringify(body)});}
+    async function boot(){try{const me=await api('/me');authBox.classList.add('hidden');appBox.classList.remove('hidden');$('identity').textContent=me.email;await loadProducts();}catch{appBox.classList.add('hidden');authBox.classList.remove('hidden');}}
+    function setAuthMode(signup){$('login-form').classList.toggle('hidden',signup);$('signup-form').classList.toggle('hidden',!signup);$('auth-title').textContent=signup?'Create your seller account':'Welcome back';hideNotice('notice');}
+    $('show-signup').onclick=()=>setAuthMode(true);$('show-login').onclick=()=>setAuthMode(false);
+    $('login-form').onsubmit=async e=>{e.preventDefault();hideNotice('notice');const data=Object.fromEntries(new FormData(e.currentTarget));try{await api('/auth/login',{method:'POST',body:JSON.stringify(data)});await boot();}catch(err){showNotice('notice',err.message,true);}};
+    $('signup-form').onsubmit=async e=>{e.preventDefault();hideNotice('notice');const data=Object.fromEntries(new FormData(e.currentTarget));try{await api('/auth/signup',{method:'POST',body:JSON.stringify(data)});await boot();}catch(err){showNotice('notice',err.message,true);}};
+    let activeEventStreams = {};
+    function closeEventStreams(){
+      for(const id in activeEventStreams){
+        if(activeEventStreams[id]){activeEventStreams[id].close();}
+      }
+      activeEventStreams={};
+    }
+
+    document.querySelectorAll('[data-view]').forEach(button=>button.onclick=async()=>{
+      document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('secondary',b!==button));
+      document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden'));
+      $(button.dataset.view+'-view').classList.remove('hidden');
+      if(button.dataset.view!=='conversations')closeEventStreams();
+      try{
+        if(button.dataset.view==='products')await loadProducts();
+        if(button.dataset.view==='faqs')await loadFaqs();
+        if(button.dataset.view==='conversations')await loadConversations();
+        if(button.dataset.view==='whatsapp')await loadWhatsApp();
+      }catch(err){showNotice('app-notice',err.message,true);}
+    });
+
+    $('logout').onclick=async()=>{
+      closeEventStreams();
+      try{await mutate('/auth/logout','POST',{});await boot();}catch(err){showNotice('app-notice',err.message,true);}
+    };
+
+    function cell(row,value){const td=document.createElement('td');td.textContent=value??'';row.append(td);return td;}
+    async function loadProducts(){const data=await api('/catalog/products?limit=200');const tbody=$('products');tbody.replaceChildren();for(const p of data.items){const tr=document.createElement('tr');cell(tr,p.sku);cell(tr,p.name);cell(tr,Number(p.price_pkr).toLocaleString());cell(tr,p.stock);const state=cell(tr,'');const tag=document.createElement('span');tag.className='tag';tag.textContent=p.active?'Active':'Inactive';state.append(tag);tbody.append(tr);}}
+    $('upload-form').onsubmit=async e=>{e.preventDefault();const form=new FormData(e.currentTarget);try{const token=await csrf();const result=await api('/catalog/upload',{method:'POST',headers:{'X-CSRF-Token':token},body:form});showNotice('app-notice',`Catalog saved: ${result.created} new, ${result.updated} updated.`);e.currentTarget.reset();await loadProducts();}catch(err){showNotice('app-notice',err.message,true);}};
+    $('download-template').onclick=()=>{const content='sku,name,description,price_pkr,sizes,colors,stock,category\n';const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type:'text/csv'}));a.download='catalog-template.csv';a.click();URL.revokeObjectURL(a.href);};
+    $('faq-form').onsubmit=async e=>{e.preventDefault();const data=Object.fromEntries(new FormData(e.currentTarget));try{await mutate('/faqs','POST',data);showNotice('app-notice','FAQ saved.');e.currentTarget.reset();await loadFaqs();}catch(err){showNotice('app-notice',err.message,true);}};
+    async function loadFaqs(){const data=await api('/faqs?limit=200');const list=$('faqs-list');list.replaceChildren();for(const faq of data.items){const card=document.createElement('article');card.className='chat';const q=document.createElement('strong');q.textContent=faq.question;const a=document.createElement('p');a.textContent=faq.answer;card.append(q,a);list.append(card);}}
+
+    async function loadConversations(){
+      closeEventStreams();
+      const data=await api('/conversations');
+      const list=$('conversations-list');
+      list.replaceChildren();
+      if(!data.items.length){list.textContent='No customer messages yet.';return;}
+
+      for(const conversation of data.items){
+        const card=document.createElement('article');
+        card.className='chat';
+        card.id=`conv-${conversation.id}`;
+
+        const header=document.createElement('div');
+        header.className='split';
+        const title=document.createElement('strong');
+        title.textContent=`${conversation.customer_name||'Customer'} · ${conversation.customer_phone}`;
+
+        const toggle=document.createElement('button');
+        toggle.className='secondary';
+        toggle.textContent=conversation.bot_active?'Pause bot':'Resume bot';
+        toggle.onclick=async()=>{
+          try{
+            await mutate(`/conversations/${conversation.id}/${conversation.bot_active?'handoff':'resume'}`,'POST',{});
+          }catch(err){showNotice('app-notice',err.message,true);}
+        };
+        header.append(title,toggle);
+        card.append(header);
+
+        const flag=document.createElement('span');
+        flag.className='tag'+(conversation.needs_seller_action?'':' hidden');
+        flag.textContent='Seller follow-up needed';
+        card.append(flag);
+
+        const msgContainer=document.createElement('div');
+        msgContainer.className='messages-box';
+        for(const message of conversation.messages){
+          const bubble=document.createElement('div');
+          bubble.className='msg'+(message.direction==='outbound'?' out':'');
+          bubble.textContent=message.content;
+          msgContainer.append(bubble);
+        }
+        card.append(msgContainer);
+
+        const form=document.createElement('form');
+        form.className='row';
+        const input=document.createElement('input');
+        input.name='message';
+        input.maxLength=4000;
+        input.placeholder='Reply to customer…';
+        input.required=true;
+        const send=document.createElement('button');
+        send.textContent='Send reply';
+        form.append(input,send);
+
+        form.onsubmit=async e=>{
+          e.preventDefault();
+          const text=input.value.trim();
+          if(!text)return;
+          try{
+            input.value='';
+            await mutate(`/conversations/${conversation.id}/reply`,'POST',{message:text});
+          }catch(err){showNotice('app-notice',err.message,true);}
+        };
+        card.append(form);
+        list.append(card);
+
+        // Connect real-time Server-Sent Events stream
+        try{
+          const es=new EventSource(`/api/conversations/${conversation.id}/stream`);
+          activeEventStreams[conversation.id]=es;
+          es.onmessage=(e)=>{
+            try{
+              const ev=JSON.parse(e.data);
+              if(ev.type==='message'){
+                const bubble=document.createElement('div');
+                bubble.className='msg'+(ev.direction==='outbound'?' out':'');
+                bubble.textContent=ev.content;
+                msgContainer.append(bubble);
+                bubble.scrollIntoView({behavior:'smooth',block:'nearest'});
+                if(ev.needs_seller_action!==undefined){
+                  flag.classList.toggle('hidden',!ev.needs_seller_action);
+                }
+              }else if(ev.type==='state'){
+                toggle.textContent=ev.bot_active?'Pause bot':'Resume bot';
+                conversation.bot_active=ev.bot_active;
+                flag.classList.toggle('hidden',!ev.needs_seller_action);
+              }
+            }catch(err){}
+          };
+        }catch(err){}
+      }
+    }
+
+    async function loadWhatsApp(){const state=await api('/settings/whatsapp');$('wa-state').textContent=state.connected?`Connected · Phone Number ID ${state.phone_number_id}`:'Not connected yet.';}
+    $('refresh-conversations').onclick=()=>loadConversations().catch(err=>showNotice('app-notice',err.message,true));
+    $('whatsapp-form').onsubmit=async e=>{e.preventDefault();const data=Object.fromEntries(new FormData(e.currentTarget));try{await mutate('/settings/whatsapp','PUT',data);e.currentTarget.reset();await loadWhatsApp();showNotice('app-notice','WhatsApp settings saved.');}catch(err){showNotice('app-notice',err.message,true);}};
+    boot();
+  </script>
+</body>
+</html>
